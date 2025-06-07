@@ -1,0 +1,139 @@
+#include <iostream>
+#include <cctype>
+#include <stack>
+#include <cmath>
+using namespace std; 
+
+int prior(char o){                  
+    if (o=='^')
+        return 3;
+    if (o=='*' || o=='/')
+        return 2;
+    if (o=='+'||o=='-') 
+        return 1;
+    return 0;
+}
+    
+int main()
+{
+  stack<long long> oper;    
+  string expr; 
+  string pol;
+  string numb1 = "";
+  
+    cin >> expr;
+     
+    int index = 0; 
+    for (char e : expr){
+         if (isdigit(e)){
+             if (index + 1 < expr.size() && isdigit(expr[index + 1])) {    
+            numb1 += e;
+          } else {
+            numb1 += e;
+            pol += numb1 + " ";
+            numb1 = "";      
+          }
+        }
+        if (isalpha(e)){
+            pol+=e;
+        }
+         else if (e=='(')
+            oper.push(e); 
+        else if (e==')'){
+            while(!oper.empty()){
+                if(oper.top()=='('){
+                    oper.pop();
+                    break;
+                }
+                else {
+                    pol+=oper.top();
+                    oper.pop();
+                }
+            }
+        }
+        else if (e=='-'){
+            if (pol.empty()||expr.at(index - 1) == '(')
+                pol+='~';
+            else{
+                while(!oper.empty()&&prior(e)<=prior(oper.top())&&oper.top()!='('){
+                    pol+=oper.top();
+                    oper.pop();
+                }
+            oper.push(e);
+            }
+            
+        }
+        else if (e=='^'){
+             while(!oper.empty()&&prior(e)<=prior(oper.top())&&oper.top()!='('){
+                pol+=oper.top();
+                oper.pop();
+            }
+            oper.push(e);
+        }
+         else if (e=='+'|| e == '*' || e == '/'){
+            while(!oper.empty()&&prior(e)<=prior(oper.top())&&oper.top()!='('){
+                pol+=oper.top();
+                oper.pop();
+            }
+            oper.push(e);
+         }
+        index++;
+    }
+     while(!oper.empty()){
+        pol+=oper.top();
+        oper.pop();
+    }
+   
+    int t, x, y;
+    cin >> t;
+    while(t--){
+        cin >> x >> y;
+        bool unarminus = false; 
+        int index2 = 0;
+        string numb2 = "";
+        for(char p : pol){
+            if (p == ' ') {
+                index2++;
+                continue;
+            }
+            else if (p == 'x') {
+                oper.push(unarminus ? -x : x);
+                unarminus = false;
+            }
+            else if (p == 'y') {
+                oper.push(unarminus ? -y : y);
+                unarminus = false;
+            }
+            else if (isdigit(p)) {
+                if (index2 + 1 < pol.size() && isdigit(pol[index2 + 1]))
+                    numb2 += p;
+                else {
+                    numb2 += p;
+                    long long resnumb = stoll(numb2);
+                    oper.push(unarminus ? -resnumb : resnumb);
+                    unarminus = false;
+                    numb2 = "";
+                }
+            }
+            else if (p == '~')
+                unarminus = true;
+            else {
+                long long res;
+                long long oper2 = oper.top();
+                oper.pop();
+                long long oper1 = oper.top();
+                oper.pop();
+                if (p == '+') res = oper1 + oper2;
+                else if (p == '-') res = oper1 - oper2;
+                else if (p == '*') res = oper1 * oper2;
+                else if (p == '/') res = oper1 / oper2;
+                else if (p == '^') res = pow(oper1, oper2);
+                oper.push(res);
+            }
+            index2++;
+        }
+        cout << oper.top() << endl;
+    }
+
+        
+    }
