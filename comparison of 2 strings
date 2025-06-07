@@ -1,0 +1,47 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    vector<char> s;
+    vector<char> ss;
+
+    char c;
+    while (cin.get(c) && c != '\n')
+        s.push_back(c);
+
+    while (cin.get(c) && c != '\n')
+        ss.push_back(c);
+
+    int n = s.size();
+    int m = ss.size();
+    int i = 0, j = 0;
+
+    while (i < n && j < m) {
+        if (s[i] > ss[j]) {
+            for (char e : ss)
+                cout << e;
+            cout << endl << m << endl;
+            return 0;
+        } else if (s[i] < ss[j]) {
+            for (char e : s)
+                cout << e;
+            cout << endl << n << endl;
+            return 0;
+        }
+        i++;
+        j++;
+    }
+
+    if (n < m) {
+        for (char e : s)
+            cout << e;
+        cout << endl << n << endl;
+    } else {
+        for (char e : ss)
+            cout << e;
+        cout << endl << m << endl;
+    }
+}
+
